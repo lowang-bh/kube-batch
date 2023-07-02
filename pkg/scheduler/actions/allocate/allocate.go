@@ -126,6 +126,7 @@ func (alloc *allocateAction) Execute(ssn *framework.Session) {
 		glog.V(3).Infof("Try to allocate resource to %d tasks of Job <%v/%v>",
 			tasks.Len(), job.Namespace, job.Name)
 
+		stmt := ssn.Statement()
 		for !tasks.Empty() {
 			task := tasks.Pop().(*api.TaskInfo)
 
@@ -160,7 +161,7 @@ func (alloc *allocateAction) Execute(ssn *framework.Session) {
 			if task.InitResreq.LessEqual(node.Idle) {
 				glog.V(3).Infof("Binding Task <%v/%v> to node <%v>",
 					task.Namespace, task.Name, node.Name)
-				if err := ssn.Allocate(task, node.Name); err != nil {
+				if err := stmt.Allocate(task, node.Name); err != nil {
 					glog.Errorf("Failed to bind Task %v on %v in Session %v, err: %v",
 						task.UID, node.Name, ssn.UID, err)
 				}
@@ -175,7 +176,7 @@ func (alloc *allocateAction) Execute(ssn *framework.Session) {
 				if task.InitResreq.LessEqual(node.Releasing) {
 					glog.V(3).Infof("Pipelining Task <%v/%v> to node <%v> for <%v> on <%v>",
 						task.Namespace, task.Name, node.Name, task.InitResreq, node.Releasing)
-					if err := ssn.Pipeline(task, node.Name); err != nil {
+					if err := stmt.Pipeline(task, node.Name); err != nil {
 						glog.Errorf("Failed to pipeline Task %v on %v in Session %v",
 							task.UID, node.Name, ssn.UID)
 					}
@@ -186,6 +187,13 @@ func (alloc *allocateAction) Execute(ssn *framework.Session) {
 				jobs.Push(job)
 				break
 			}
+		}
+
+		// HotFix: un-allocate to release the resource for other jobs
+		if ssn.JobReady(job) {
+			stmt.Commit()
+		} else {
+			stmt.Discard()
 		}
 
 		// Added Queue back until no job in Queue.
