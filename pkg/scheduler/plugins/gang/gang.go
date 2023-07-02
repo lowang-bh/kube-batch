@@ -70,21 +70,24 @@ func (gp *gangPlugin) OnSessionOpen(ssn *framework.Session) {
 
 	preemptableFn := func(preemptor *api.TaskInfo, preemptees []*api.TaskInfo) []*api.TaskInfo {
 		var victims []*api.TaskInfo
+		jobOccupiedMap := map[api.JobID]int32{}
 
 		for _, preemptee := range preemptees {
 			job := ssn.Jobs[preemptee.Job]
-			occupid := job.ReadyTaskNum()
-			preemptable := job.MinAvailable <= occupid-1 || job.MinAvailable == 1
+			if _, found := jobOccupiedMap[job.UID]; !found {
+				jobOccupiedMap[job.UID] = job.ReadyTaskNum()
+			}
 
-			if !preemptable {
-				glog.V(4).Infof("Can not preempt task <%v/%v> because of gang-scheduling",
-					preemptee.Namespace, preemptee.Name)
-			} else {
+			if jobOccupiedMap[job.UID] > job.MinAvailable {
+				jobOccupiedMap[job.UID]--
 				victims = append(victims, preemptee)
+			} else {
+				glog.V(5).Infof("Can not preempt task <%v/%v> because job %s ready num(%d) <= MinAvailable(%d) for gang-scheduling",
+					preemptee.Namespace, preemptee.Name, job.Name, jobOccupiedMap[job.UID], job.MinAvailable)
 			}
 		}
 
-		glog.V(4).Infof("Victims from Gang plugins are %+v", victims)
+		glog.V(3).Infof("Victims from Gang plugins are %+v", victims)
 
 		return victims
 	}
