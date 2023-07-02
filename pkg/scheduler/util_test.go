@@ -22,6 +22,7 @@ import (
 
 	_ "github.com/kubernetes-sigs/kube-batch/pkg/scheduler/actions"
 	"github.com/kubernetes-sigs/kube-batch/pkg/scheduler/conf"
+	"github.com/kubernetes-sigs/kube-batch/pkg/scheduler/framework"
 )
 
 func TestLoadSchedulerConf(t *testing.T) {
@@ -44,7 +45,7 @@ tiers:
 		{
 			Plugins: []conf.PluginOption{
 				{
-					Name:                "priority",
+					Name:                framework.PriorityPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -56,7 +57,7 @@ tiers:
 					EnabledNodeOrder:    &trueValue,
 				},
 				{
-					Name:                "gang",
+					Name:                framework.GangPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -68,7 +69,7 @@ tiers:
 					EnabledNodeOrder:    &trueValue,
 				},
 				{
-					Name:                "conformance",
+					Name:                framework.ConformancePlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -84,7 +85,7 @@ tiers:
 		{
 			Plugins: []conf.PluginOption{
 				{
-					Name:                "drf",
+					Name:                framework.DRFPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -96,7 +97,7 @@ tiers:
 					EnabledNodeOrder:    &trueValue,
 				},
 				{
-					Name:                "predicates",
+					Name:                framework.PredicatesPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -108,7 +109,7 @@ tiers:
 					EnabledNodeOrder:    &trueValue,
 				},
 				{
-					Name:                "proportion",
+					Name:                framework.ProportionPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,
@@ -120,7 +121,7 @@ tiers:
 					EnabledNodeOrder:    &trueValue,
 				},
 				{
-					Name:                "nodeorder",
+					Name:                framework.NodeorderPlugin,
 					EnabledJobOrder:     &trueValue,
 					EnabledJobReady:     &trueValue,
 					EnabledJobPipelined: &trueValue,

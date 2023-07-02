@@ -38,8 +38,8 @@ import (
 )
 
 func TestPreempt(t *testing.T) {
-	framework.RegisterPluginBuilder("conformance", conformance.New)
-	framework.RegisterPluginBuilder("gang", gang.New)
+	framework.RegisterPluginBuilder(framework.ConformancePlugin, conformance.New)
+	framework.RegisterPluginBuilder(framework.GangPlugin, gang.New)
 	defer framework.CleanupPluginBuilders()
 
 	tests := []struct {
@@ -310,11 +310,11 @@ func TestPreempt(t *testing.T) {
 			{
 				Plugins: []conf.PluginOption{
 					{
-						Name:               "conformance",
+						Name:               framework.ConformancePlugin,
 						EnabledPreemptable: &trueValue,
 					},
 					{
-						Name:                "gang",
+						Name:                framework.GangPlugin,
 						EnabledPreemptable:  &trueValue,
 						EnabledJobPipelined: &trueValue,
 					},
@@ -356,10 +356,10 @@ func TestPreempt(t *testing.T) {
 }
 
 func TestPreemptBetweenJobs(t *testing.T) {
-	framework.RegisterPluginBuilder("conformance", conformance.New)
-	framework.RegisterPluginBuilder("gang", gang.New)
-	framework.RegisterPluginBuilder("predicates", predicates.New)
-	framework.RegisterPluginBuilder("nodeorder", nodeorder.New)
+	framework.RegisterPluginBuilder(framework.ConformancePlugin, conformance.New)
+	framework.RegisterPluginBuilder(framework.GangPlugin, gang.New)
+	framework.RegisterPluginBuilder(framework.PredicatesPlugin, predicates.New)
+	framework.RegisterPluginBuilder(framework.NodeorderPlugin, nodeorder.New)
 	defer framework.CleanupPluginBuilders()
 
 	tests := []struct {
@@ -463,20 +463,20 @@ func TestPreemptBetweenJobs(t *testing.T) {
 			{
 				Plugins: []conf.PluginOption{
 					{
-						Name:               "conformance",
+						Name:               framework.ConformancePlugin,
 						EnabledPreemptable: &trueValue,
 					},
 					{
-						Name:                "gang",
+						Name:                framework.GangPlugin,
 						EnabledPreemptable:  &trueValue,
 						EnabledJobPipelined: &trueValue,
 					},
 					{
-						Name:             "predicates",
+						Name:             framework.PredicatesPlugin,
 						EnabledPredicate: &trueValue,
 					},
 					{
-						Name:             "nodeorder",
+						Name:             framework.NodeorderPlugin,
 						EnabledNodeOrder: &trueValue,
 					},
 				},
@@ -506,10 +506,10 @@ func TestPreemptBetweenJobs(t *testing.T) {
 }
 
 func TestPreemptInJobs(t *testing.T) {
-	framework.RegisterPluginBuilder("conformance", conformance.New)
-	framework.RegisterPluginBuilder("priority", priority.New)
-	framework.RegisterPluginBuilder("predicates", predicates.New)
-	framework.RegisterPluginBuilder("nodeorder", nodeorder.New)
+	framework.RegisterPluginBuilder(framework.ConformancePlugin, conformance.New)
+	framework.RegisterPluginBuilder(framework.PriorityPlugin, priority.New)
+	framework.RegisterPluginBuilder(framework.PredicatesPlugin, predicates.New)
+	framework.RegisterPluginBuilder(framework.NodeorderPlugin, nodeorder.New)
 	defer framework.CleanupPluginBuilders()
 
 	highPriority, lowPriority := int32(2000), int32(100)
@@ -600,21 +600,21 @@ func TestPreemptInJobs(t *testing.T) {
 			{
 				Plugins: []conf.PluginOption{
 					{
-						Name:               "conformance",
+						Name:               framework.ConformancePlugin,
 						EnabledPreemptable: &trueValue,
 					},
 					{
-						Name:               "priority",
+						Name:               framework.PriorityPlugin,
 						EnabledJobOrder:    &trueValue,
 						EnabledTaskOrder:   &trueValue,
 						EnabledPreemptable: &trueValue,
 					},
 					{
-						Name:             "predicates",
+						Name:             framework.PredicatesPlugin,
 						EnabledPredicate: &trueValue,
 					},
 					{
-						Name:             "nodeorder",
+						Name:             framework.NodeorderPlugin,
 						EnabledNodeOrder: &trueValue,
 					},
 				},

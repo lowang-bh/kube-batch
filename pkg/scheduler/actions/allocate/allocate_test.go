@@ -36,8 +36,8 @@ import (
 )
 
 func TestAllocate(t *testing.T) {
-	framework.RegisterPluginBuilder("drf", drf.New)
-	framework.RegisterPluginBuilder("proportion", proportion.New)
+	framework.RegisterPluginBuilder(framework.DRFPlugin, drf.New)
+	framework.RegisterPluginBuilder(framework.ProportionPlugin, proportion.New)
 	defer framework.CleanupPluginBuilders()
 
 	tests := []struct {
@@ -181,12 +181,12 @@ func TestAllocate(t *testing.T) {
 			{
 				Plugins: []conf.PluginOption{
 					{
-						Name:               "drf",
+						Name:               framework.DRFPlugin,
 						EnabledPreemptable: &trueValue,
 						EnabledJobOrder:    &trueValue,
 					},
 					{
-						Name:               "proportion",
+						Name:               framework.ProportionPlugin,
 						EnabledQueueOrder:  &trueValue,
 						EnabledReclaimable: &trueValue,
 					},

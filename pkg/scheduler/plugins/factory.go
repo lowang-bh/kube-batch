@@ -30,13 +30,13 @@ import (
 
 func init() {
 	// Plugins for Jobs
-	framework.RegisterPluginBuilder("drf", drf.New)
-	framework.RegisterPluginBuilder("gang", gang.New)
-	framework.RegisterPluginBuilder("predicates", predicates.New)
-	framework.RegisterPluginBuilder("priority", priority.New)
-	framework.RegisterPluginBuilder("nodeorder", nodeorder.New)
-	framework.RegisterPluginBuilder("conformance", conformance.New)
+	framework.RegisterPluginBuilder(framework.DRFPlugin, drf.New)
+	framework.RegisterPluginBuilder(framework.GangPlugin, gang.New)
+	framework.RegisterPluginBuilder(framework.PredicatesPlugin, predicates.New)
+	framework.RegisterPluginBuilder(framework.PriorityPlugin, priority.New)
+	framework.RegisterPluginBuilder(framework.NodeorderPlugin, nodeorder.New)
+	framework.RegisterPluginBuilder(framework.ConformancePlugin, conformance.New)
 
 	// Plugins for Queues
-	framework.RegisterPluginBuilder("proportion", proportion.New)
+	framework.RegisterPluginBuilder(framework.ProportionPlugin, proportion.New)
 }

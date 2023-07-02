@@ -35,8 +35,8 @@ import (
 )
 
 func TestReclaim(t *testing.T) {
-	framework.RegisterPluginBuilder("conformance", conformance.New)
-	framework.RegisterPluginBuilder("gang", gang.New)
+	framework.RegisterPluginBuilder(framework.ConformancePlugin, conformance.New)
+	framework.RegisterPluginBuilder(framework.GangPlugin, gang.New)
 	defer framework.CleanupPluginBuilders()
 
 	tests := []struct {
@@ -142,11 +142,11 @@ func TestReclaim(t *testing.T) {
 			{
 				Plugins: []conf.PluginOption{
 					{
-						Name:               "conformance",
+						Name:               framework.ConformancePlugin,
 						EnabledReclaimable: &trueValue,
 					},
 					{
-						Name:               "gang",
+						Name:               framework.GangPlugin,
 						EnabledReclaimable: &trueValue,
 					},
 				},

@@ -18,6 +18,16 @@ package framework
 
 import "sync"
 
+const (
+	DRFPlugin         = "drf"
+	GangPlugin        = "gang"
+	PredicatesPlugin  = "predicates"
+	PriorityPlugin    = "priority"
+	NodeorderPlugin   = "nodeorder"
+	ConformancePlugin = "conformance"
+	ProportionPlugin  = "proportion"
+)
+
 var pluginMutex sync.Mutex
 
 // PluginBuilder plugin management
