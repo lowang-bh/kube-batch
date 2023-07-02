@@ -65,9 +65,9 @@ func (r *Resource) Clone() *Resource {
 	return clone
 }
 
-var minMilliCPU float64 = 10
-var minMilliScalarResources float64 = 10
-var minMemory float64 = 10 * 1024 * 1024
+var minMilliCPU float64 = 0.1
+var minMilliScalarResources float64 = 0.1
+var minMemory float64 = 0.1
 
 // NewResource create a new resource object from resource list
 func NewResource(rl v1.ResourceList) *Resource {
@@ -226,10 +226,7 @@ func (r *Resource) Multi(ratio float64) *Resource {
 // Less checks whether a resource is less than other.
 func (r *Resource) Less(rr *Resource) bool {
 	lessFunc := func(l, r float64) bool {
-		if l < r {
-			return true
-		}
-		return false
+		return l < r
 	}
 
 	if !lessFunc(r.MilliCPU, rr.MilliCPU) {
@@ -240,21 +237,13 @@ func (r *Resource) Less(rr *Resource) bool {
 	}
 
 	if r.ScalarResources == nil {
-		if rr.ScalarResources != nil {
-			for _, rrQuant := range rr.ScalarResources {
-				if rrQuant <= minMilliScalarResources {
-					return false
-				}
-			}
-		}
 		return true
 	}
 
-	if rr.ScalarResources == nil {
-		return false
-	}
-
 	for rName, rQuant := range r.ScalarResources {
+		if rQuant <= minMilliScalarResources {
+			continue
+		}
 		rrQuant := rr.ScalarResources[rName]
 		if !lessFunc(rQuant, rrQuant) {
 			return false
@@ -267,7 +256,7 @@ func (r *Resource) Less(rr *Resource) bool {
 // LessEqual checks whether a resource is less than other resource
 func (r *Resource) LessEqual(rr *Resource) bool {
 	lessEqualFunc := func(l, r, diff float64) bool {
-		if l < r || math.Abs(l-r) < diff {
+		if l <= r || math.Abs(l-r) < diff {
 			return true
 		}
 		return false
@@ -285,13 +274,6 @@ func (r *Resource) LessEqual(rr *Resource) bool {
 	}
 
 	for rName, rQuant := range r.ScalarResources {
-		if rQuant <= minMilliScalarResources {
-			continue
-		}
-		if rr.ScalarResources == nil {
-			return false
-		}
-
 		rrQuant := rr.ScalarResources[rName]
 		if !lessEqualFunc(rQuant, rrQuant, minMilliScalarResources) {
 			return false

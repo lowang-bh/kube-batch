@@ -284,7 +284,7 @@ func newSchedulerCache(config *rest.Config, schedulerName string, defaultQueue s
 	sc.podInformer.Informer().AddEventHandler(
 		cache.FilteringResourceEventHandler{
 			FilterFunc: func(obj interface{}) bool {
-				switch v :=obj.(type) {
+				switch v := obj.(type) {
 				case *v1.Pod:
 					// take charge of pods whose scheduler is sc.schedulerName, or bonded pod by other scheduler
 					if !responsibleForPod(v, sc.schedulerName) {
