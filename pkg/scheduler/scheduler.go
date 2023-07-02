@@ -89,7 +89,6 @@ func (pc *Scheduler) runOnce() {
 	glog.V(4).Infof("Start scheduling ...")
 	scheduleStartTime := time.Now()
 	defer glog.V(4).Infof("End scheduling ...")
-	defer metrics.UpdateE2eDuration(metrics.Duration(scheduleStartTime))
 
 	ssn := framework.OpenSession(pc.cache, pc.plugins)
 	defer framework.CloseSession(ssn)
@@ -99,4 +98,5 @@ func (pc *Scheduler) runOnce() {
 		action.Execute(ssn)
 		metrics.UpdateActionDuration(action.Name(), metrics.Duration(actionStartTime))
 	}
+	metrics.UpdateE2eDuration(metrics.Duration(scheduleStartTime))
 }
