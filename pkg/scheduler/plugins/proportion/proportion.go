@@ -180,14 +180,15 @@ func (pp *proportionPlugin) OnSessionOpen(ssn *framework.Session) {
 				allocations[job.Queue] = attr.allocated.Clone()
 			}
 			allocated := allocations[job.Queue]
-			if allocated.Less(reclaimee.Resreq) {
-				glog.Errorf("Failed to allocate resource for Task <%s/%s> in Queue <%s>， not enough resource.",
-					reclaimee.Namespace, reclaimee.Name, job.Queue)
+			if allocated.Less(reclaimer.Resreq) {
+				glog.Errorf("Failed to allocate resource for Task <%s/%s> in Queue <%s>, not enough resource.",
+					reclaimer.Namespace, reclaimer.Name, job.Queue)
 				continue
 			}
 
-			allocated.Sub(reclaimee.Resreq)
-			if attr.deserved.LessEqual(allocated) {
+			// allocated large than deserved, should release the extra used resource
+			if !allocated.LessEqual(attr.deserved) {
+				allocated.Sub(reclaimee.Resreq)
 				victims = append(victims, reclaimee)
 			}
 		}
