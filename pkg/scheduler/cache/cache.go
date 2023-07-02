@@ -18,7 +18,6 @@ package cache
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -285,13 +284,22 @@ func newSchedulerCache(config *rest.Config, schedulerName string, defaultQueue s
 	sc.podInformer.Informer().AddEventHandler(
 		cache.FilteringResourceEventHandler{
 			FilterFunc: func(obj interface{}) bool {
-				switch obj.(type) {
+				switch v :=obj.(type) {
 				case *v1.Pod:
-					pod := obj.(*v1.Pod)
-					if strings.Compare(pod.Spec.SchedulerName, schedulerName) == 0 && pod.Status.Phase == v1.PodPending {
+					// take charge of pods whose scheduler is sc.schedulerName, or bonded pod by other scheduler
+					if !responsibleForPod(v, sc.schedulerName) {
+						if len(v.Spec.NodeName) == 0 {
+							return false
+						}
+					}
+					return true
+				case cache.DeletedFinalStateUnknown:
+					if _, ok := v.Obj.(*v1.Pod); ok {
+						// The carried object may be stale, always pass to clean up stale obj in event handlers.
 						return true
 					}
-					return pod.Status.Phase != v1.PodPending
+					glog.Errorf("Cannot convert object %T to *v1.Pod", v.Obj)
+					return false
 				default:
 					return false
 				}
